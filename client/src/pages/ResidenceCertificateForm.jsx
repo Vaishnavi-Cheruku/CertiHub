@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 const ResidenceCertificateForm = () => {
   const [formData, setFormData] = useState({
+    userId: '',
     officialName: '',
     officialDesignation: '',
     applicantName: '',
@@ -41,16 +42,54 @@ const ResidenceCertificateForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-  };
+  
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === 'documents') {
+        value.forEach((file) => {
+          data.append('documents', file);
+        });
+      } else {
+        data.append(key, value);
+      }
+    });
+  
+    try {
+      const response = await fetch('http://localhost:4000/api/residence-certificates', {
+        method: 'POST',
+        body: data
+      });
+  
+      if (response.ok) {
+        alert('Application submitted successfully!');
+        // Optional: reset form or redirect
+      } else {
+        alert('Something went wrong while submitting. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Server error. Please try again later.');
+    }
+  };  
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded shadow-md">
       <h1 className="text-2xl font-bold text-center mb-6">Request for Residence Certificate</h1>
       
       <form onSubmit={handleSubmit}>
+        <div className="mb-6">
+          <label className="block mb-1 font-medium">User ID:</label>
+          <input
+            type="text"
+            name="userId"
+            value={formData.userID}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded p-2"
+            required
+          />
+        </div>
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-4">To,</h2>
           

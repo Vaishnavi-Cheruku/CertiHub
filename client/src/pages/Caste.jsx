@@ -23,40 +23,14 @@ const Caste = () => {
     religion: '',
   });
 
-  const [documents, setDocuments] = useState({
-    applicationForm: null,
-    proofOfAddress: null,
-    proofOfCaste: null,
-    proofOfIdentity: null,
-    passportPhoto: null,
-  });
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    setDocuments(prev => ({ ...prev, [name]: files[0] }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    const submissionData = new FormData();
-
-    Object.entries(formData).forEach(([key, value]) => {
-      submissionData.append(key, value);
-    });
-
-    Object.entries(documents).forEach(([key, file]) => {
-      if (file) {
-        submissionData.append(key, file);
-      }
-    });
-
-    console.log('Form data and documents ready to be submitted');
-    // Use fetch or axios to POST submissionData to a backend endpoint
+    console.log(formData); // Replace with actual submission logic
     alert('Form submitted successfully!');
   };
 
@@ -70,7 +44,7 @@ const Caste = () => {
       </h3>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Mandal and District */}
+        {/* Addressed To */}
         <div>
           <label className="block text-sm font-medium text-gray-700">To The Tahsildar</label>
           <input type="text" placeholder="Mandal" className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
@@ -82,33 +56,26 @@ const Caste = () => {
           <input type="date" className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
         </div>
 
-        {/* Personal Info */}
-        {[
-          { label: 'Applicant Name', name: 'applicantName' },
-          { label: 'Relation (S/o, D/o, W/o, etc)', name: 'relation' },
-          { label: 'Mother Name', name: 'motherName' }
-        ].map(({ label, name }) => (
-          <div key={name}>
-            <label className="block text-sm font-medium text-gray-700">{label}</label>
-            <input
-              type="text"
-              name={name}
-              value={formData[name]}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
-          </div>
-        ))}
+        {/* Applicant Info */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Applicant Name</label>
+          <input type="text" name="applicantName" value={formData.applicantName} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Relation (S/o, D/o, W/o, etc)</label>
+          <input type="text" name="relation" value={formData.relation} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Mother Name</label>
+          <input type="text" name="motherName" value={formData.motherName} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Gender</label>
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            >
+            <select name="gender" value={formData.gender} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2">
               <option value="">Select</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -117,13 +84,7 @@ const Caste = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-            <input
-              type="date"
-              name="dob"
-              value={formData.dob}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
+            <input type="date" name="dob" value={formData.dob} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
           </div>
         </div>
 
@@ -131,131 +92,111 @@ const Caste = () => {
         <h4 className="font-semibold text-gray-800 mt-6">Address</h4>
 
         <div className="grid grid-cols-2 gap-4">
-          {['doorNo', 'landmark'].map((field) => (
-            <div key={field}>
-              <label className="block text-sm font-medium text-gray-700">{field === 'doorNo' ? 'Door No' : 'Landmark'}</label>
-              <input
-                type="text"
-                name={field}
-                value={formData[field]}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              />
-            </div>
-          ))}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Door No</label>
+            <input type="text" name="doorNo" value={formData.doorNo} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Landmark</label>
+            <input type="text" name="landmark" value={formData.landmark} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          {['district', 'mandal', 'village'].map((field) => (
-            <div key={field}>
-              <label className="block text-sm font-medium text-gray-700">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
-              <input
-                type="text"
-                name={field}
-                value={formData[field]}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              />
-            </div>
-          ))}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">District</label>
+            <input type="text" name="district" value={formData.district} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Mandal</label>
+            <input type="text" name="mandal" value={formData.mandal} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Village</label>
+            <input type="text" name="village" value={formData.village} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          {['pincode', 'rationCardNo'].map((field) => (
-            <div key={field}>
-              <label className="block text-sm font-medium text-gray-700">{field === 'pincode' ? 'Pincode' : 'Ration Card No'}</label>
-              <input
-                type="text"
-                name={field}
-                value={formData[field]}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              />
-            </div>
-          ))}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Pincode</label>
+            <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Ration Card No</label>
+            <input type="text" name="rationCardNo" value={formData.rationCardNo} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+          </div>
         </div>
 
-        {['mobileNo', 'aadhaarNo'].map((field) => (
-          <div key={field}>
-            <label className="block text-sm font-medium text-gray-700">{field === 'mobileNo' ? 'Mobile No' : 'AADHAAR No'}</label>
-            <input
-              type="text"
-              name={field}
-              value={formData[field]}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
-          </div>
-        ))}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Mobile No</label>
+          <input type="text" name="mobileNo" value={formData.mobileNo} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+        </div>
 
-        {/* Caste Certificate Info */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">AADHAAR No</label>
+          <input type="text" name="aadhaarNo" value={formData.aadhaarNo} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+        </div>
+
+        {/* Caste Certificate */}
         <h4 className="font-semibold text-gray-800 mt-6">Caste Certificate Details</h4>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Issued Before</label>
-            <select
-              name="issuedBefore"
-              value={formData.issuedBefore}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            >
+            <select name="issuedBefore" value={formData.issuedBefore} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2">
               <option value="">Select</option>
               <option value="Yes">Yes</option>
               <option value="No">No</option>
             </select>
           </div>
 
-          {['casteClaimed', 'casteCategory', 'purpose', 'religion'].map((field) => (
-            <div key={field}>
-              <label className="block text-sm font-medium text-gray-700">
-                {field.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
-              </label>
-              <input
-                type="text"
-                name={field}
-                value={formData[field]}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              />
-            </div>
-          ))}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Caste Claimed</label>
+            <input type="text" name="casteClaimed" value={formData.casteClaimed} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+          </div>
         </div>
 
-        {/* File Uploads */}
-        <h4 className="font-semibold text-gray-800 mt-6">Upload Required Documents</h4>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Caste Category</label>
+            <input type="text" name="casteCategory" value={formData.casteCategory} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+          </div>
 
-        <div className="space-y-4">
-          {[
-            { label: 'Application Form *', name: 'applicationForm' },
-            { label: 'Proof of Address *', name: 'proofOfAddress' },
-            { label: 'Proof of Caste *', name: 'proofOfCaste' },
-            { label: 'Proof of Identity *', name: 'proofOfIdentity' },
-            { label: 'Passport Size Photo', name: 'passportPhoto' },
-          ].map(({ label, name }) => (
-            <div key={name}>
-              <label className="block text-sm font-medium text-gray-700">{label}</label>
-              <input
-                type="file"
-                name={name}
-                onChange={handleFileChange}
-                className="mt-1 block w-full text-gray-700"
-                accept=".pdf,.jpg,.jpeg,.png"
-              />
-            </div>
-          ))}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Purpose</label>
+            <input type="text" name="purpose" value={formData.purpose} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Religion</label>
+          <input type="text" name="religion" value={formData.religion} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md p-2" />
         </div>
 
         {/* Submit */}
         <div className="text-center mt-6">
-          <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded"
-          >
+          <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded">
             Submit Application
           </button>
         </div>
       </form>
+
+      {/* Required Documents */}
+      <div className="mt-8">
+        <h4 className="font-semibold text-gray-800">Required Documents:</h4>
+        <ul className="list-disc list-inside text-gray-700 mt-2">
+          <li>Application Form *</li>
+          <li>Proof of Address *</li>
+          <li>Proof of Caste *</li>
+          <li>Proof of Identity *</li>
+          <li>Passport Size Photo</li>
+        </ul>
+      </div>
     </div>
   );
 };

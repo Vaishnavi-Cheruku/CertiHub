@@ -8,7 +8,6 @@ import userRouter from './routes/userRoutes.js';
 import staffRouter from "./routes/staffRoutes.js";
 import staffAuthRouter from "./routes/StaffAuthRoutes.js";
 
-
 const app = express();
 const port = process.env.PORT || 4000;
 connectDB();
