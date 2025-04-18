@@ -54,6 +54,7 @@ const Login = () => {
         toast.success("Login successful!");
         setIsLoggedin(true);
         localStorage.setItem("userToken", response.data.token);
+        localStorage.setItem("loginRole", "user");
         navigate("/home");
       }
     } catch (error) {

@@ -28,22 +28,26 @@ const StaffLogin = () => {
           email: formData.email,
           password: formData.password,
         },
-        { withCredentials: true } // ✅ Ensure cookies are sent
+        { withCredentials: true }
       );
-
+  
       if (response.data.success) {
         setIsStaffLoggedin(true);
         toast.success("Staff Login successful!");
-        navigate("/");
+      
+        // Save role + token
         localStorage.setItem("loginRole", "staff");
-
-      } else {
+        localStorage.setItem("staffToken", response.data.token); // <== add this if token exists
+      
+        navigate("/staff-home");
+      }
+      else {
         toast.error(response.data.message || "Invalid credentials.");
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong.");
     }
-  };
+  };  
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
