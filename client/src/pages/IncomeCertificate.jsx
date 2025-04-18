@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
 const IncomeCertificateForm = () => {
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [submitMessage, setSubmitMessage] = useState(null);
+const [submitStatus, setSubmitStatus] = useState(null);
+
   const [formData, setFormData] = useState({
     fullName: '',
     parentName: '',
@@ -10,9 +14,6 @@ const IncomeCertificateForm = () => {
     rationCardType: '',
     rationCardNumber: '',
     totalAnnualIncome: '',
-    purpose: '',
-    locality: '',
-    district: '',
     pincode: '',
     incomeFromLand: '',
     incomeFromBusiness: '',
@@ -39,10 +40,60 @@ const IncomeCertificateForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Form submission logic would go here
-    console.log('Form submitted:', formData);
+    setIsSubmitting(true);
+    setSubmitMessage(null);
+    
+    try {
+      // Create form data object for multipart/form-data submission (for handling file uploads)
+      const formDataToSubmit = new FormData();
+      
+      // Add all form fields to the FormData object
+      Object.keys(formData).forEach(key => {
+        if (key === 'photo' && formData[key]) {
+          formDataToSubmit.append(key, formData[key]);
+        } else if (key !== 'photo') {
+          formDataToSubmit.append(key, formData[key]);
+        }
+      });
+      
+      // Add calculated total income
+      formDataToSubmit.append('calculatedTotalIncome', calculateTotal());
+      
+      
+      // Send the form data to your API endpoint
+      const response = await axios.post('http://localhost:4000/api/income-certificates', formDataToSubmit, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+      
+      // Handle successful response
+      if (response.status === 200 || response.status === 201) {
+        setSubmitStatus('success');
+        setSubmitMessage(`Application submitted successfully! Your application ID is: ${response.data.applicationId}`);
+        
+        // Reset form after successful submission
+        setFormData(initialFormState);
+        
+        // Optionally, you can redirect the user to a confirmation page
+        // history.push(`/confirmation/${response.data.applicationId}`);
+      } else {
+        throw new Error('Unexpected response status');
+      }
+      
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      
+      // Check if there's a specific error message from the server
+      const errorMessage = error.response?.data?.message || 'Failed to submit application. Please try again later.';
+      
+      setSubmitStatus('error');
+      setSubmitMessage(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Calculate total from income sources
@@ -61,7 +112,11 @@ const IncomeCertificateForm = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       <h1 className="text-3xl font-bold text-center text-blue-600 mb-8">Income Certificate Application Form</h1>
-      
+      {submitMessage && (
+        <div className={`p-4 mb-6 rounded-md ${submitStatus === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+          {submitMessage}
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         {/* Applicant Details Section */}
         <div className="mb-8">
@@ -333,9 +388,10 @@ const IncomeCertificateForm = () => {
             <div className="flex items-center justify-center">
               <button 
                 type="submit"
-                className="w-full px-6 py-3 mt-6 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-6 py-3 mt-6 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                disabled={isSubmitting}
               >
-                Submit Application
+                {isSubmitting ? 'Submitting...' : 'Submit Application'}
               </button>
             </div>
           </div>

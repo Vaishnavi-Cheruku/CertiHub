@@ -14,17 +14,25 @@ const ResidenceCertificateForm = () => {
     landlinePhone: '',
     mobilePhone: '',
     email: '',
-    photo: null
+    photo: null,
+    documents: []
   });
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
 
     if (type === 'file') {
-      setFormData({
-        ...formData,
-        [name]: files[0]
-      });
+      if (name === 'documents') {
+        setFormData({
+          ...formData,
+          [name]: Array.from(files)
+        });
+      } else {
+        setFormData({
+          ...formData,
+          [name]: files[0]
+        });
+      }
     } else {
       setFormData({
         ...formData,
@@ -35,7 +43,6 @@ const ResidenceCertificateForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Form submission logic would go here
     console.log('Form submitted:', formData);
   };
 
@@ -44,7 +51,6 @@ const ResidenceCertificateForm = () => {
       <h1 className="text-2xl font-bold text-center mb-6">Request for Residence Certificate</h1>
       
       <form onSubmit={handleSubmit}>
-        {/* To Section */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-4">To,</h2>
           
@@ -75,7 +81,6 @@ const ResidenceCertificateForm = () => {
           </div>
         </div>
         
-        {/* Request Letter Section */}
         <div className="mb-6">
           <p className="mb-4">
             I, <strong>
@@ -136,7 +141,6 @@ const ResidenceCertificateForm = () => {
           </p>
         </div>
         
-        {/* Applicant's Details Section */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Applicant's Details:</h2>
           
@@ -172,7 +176,6 @@ const ResidenceCertificateForm = () => {
           </div>
         </div>
         
-        {/* Documents Required Section */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Documents Required for Application:</h2>
           
@@ -203,9 +206,27 @@ const ResidenceCertificateForm = () => {
               </div>
             )}
           </div>
+
+          <div className="mt-6">
+            <label className="block mb-2 font-medium">Upload Supporting Documents:</label>
+            <input
+              type="file"
+              name="documents"
+              multiple
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded p-2"
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+            />
+            {formData.documents.length > 0 && (
+              <ul className="mt-2 list-disc list-inside text-sm text-gray-700">
+                {formData.documents.map((file, index) => (
+                  <li key={index}>{file.name}</li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
         
-        {/* Contact Details Section */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Contact Details:</h2>
           
@@ -251,7 +272,6 @@ const ResidenceCertificateForm = () => {
           <p>(* = Mandatory for verification, # = Additional documents may be required based on application type.)</p>
         </div>
         
-        {/* Submit Button */}
         <div className="text-center">
           <button 
             type="submit" 
