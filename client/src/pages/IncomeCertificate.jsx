@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 const IncomeCertificateForm = () => {
   const [formData, setFormData] = useState({
+    userId:'',
     fullName: '',
     parentName: '',
     wardVillage: '',
@@ -54,6 +55,7 @@ const IncomeCertificateForm = () => {
         alert('Income Certificate Application Submitted Successfully!');
         // Optionally reset form
         setFormData({
+          userId:'',
           fullName: '',
           parentName: '',
           wardVillage: '',
@@ -232,7 +234,17 @@ const IncomeCertificateForm = () => {
                 />
               </div>
             </div>
-            
+            <div>
+              <label className="block mb-2 text-sm font-medium text-gray-600">Pincode</label>
+              <input
+                type="text"
+                name="pincode"
+                value={formData.pincode}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
             <div>
               <label className="block mb-2 text-sm font-medium text-gray-600">Purpose of Income Certificate</label>
               <input
