@@ -41,6 +41,7 @@ import casteRoutes from './routes/casteRoutes.js';
 app.use('/api/caste', casteRoutes);
 import birthDeathRoutes from "./routes/birthDeathRoutes.js";
 app.use("/api/birth-death", birthDeathRoutes);
-
+import trackingRoutes from './routes/trackingRoutes.js';
+app.use('/api/track-application', trackingRoutes);
 
 app.listen(port, () => console.log(`Server started on PORT: ${port}`));

@@ -1,6 +1,8 @@
 // controllers/incomeController.js - Update this file
 import IncomeCertificate from '../models/IncomeCertificate.js';
 import staffModel from '../models/staffModel.js';
+import userModel from '../models/userModel.js';
+import transporter from '../config/nodemailer.js';
 
 // Assign application to MRO staff - helper function
 async function assignToMRO(applicationId) {
@@ -22,6 +24,75 @@ async function assignToMRO(applicationId) {
     assignedTo,
     redirected: assignedTo === joyce
   };
+}
+
+// Helper function to send application submission confirmation email
+async function sendApplicationSubmissionEmail(userId, applicationId, fullName) {
+  try {
+    // Fetch user details to get email
+    const user = await userModel.findById(userId);
+    if (!user || !user.email) {
+      console.error('Cannot send email: User not found or no email available');
+      return;
+    }
+
+    const mailOption = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: 'Income Certificate Application Submitted',
+      text: `Dear ${fullName},
+
+Thank you for submitting your Income Certificate application. Your application ID is ${applicationId}.
+
+We will review your application and update you on its status. You can also check the status by logging into your CertiHub account.
+
+Regards,
+CertiHub Team`
+    };
+
+    await transporter.sendMail(mailOption);
+    console.log('✅ Application submission email sent successfully to:', user.email);
+  } catch (err) {
+    console.error('❌ Application submission email sending failed:', err);
+  }
+}
+
+// Helper function to send application status update email
+async function sendStatusUpdateEmail(application, status) {
+  try {
+    // Get user details to get their email
+    const user = await userModel.findById(application.userId);
+    if (!user || !user.email) {
+      console.error('Cannot send status update email: User not found or no email available');
+      return;
+    }
+
+    const statusText = status === 'approved' ? 'approved' : 'rejected';
+    const additionalInfo = status === 'approved' 
+      ? 'You can download your certificate by logging into your CertiHub account.' 
+      : `Reason: ${application.reviewComments || 'No specific reason provided.'}`;
+
+    const mailOption = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: `Income Certificate Application ${statusText.toUpperCase()}`,
+      text: `Dear ${application.fullName},
+
+Your Income Certificate application (ID: ${application._id}) has been ${statusText}.
+
+${additionalInfo}
+
+If you have any questions, please contact our support team.
+
+Regards,
+CertiHub Team`
+    };
+
+    await transporter.sendMail(mailOption);
+    console.log(`✅ Application ${statusText} email sent successfully to:`, user.email);
+  } catch (err) {
+    console.error(`❌ Application ${status} email sending failed:`, err);
+  }
 }
 
 // Handle form submission
@@ -75,6 +146,9 @@ export const createIncomeCertificate = async (req, res) => {
     
     // Now assign it to an MRO staff member
     const assignment = await assignToMRO(savedCertificate._id);
+    
+    // Send email confirmation to user
+    await sendApplicationSubmissionEmail(userId, savedCertificate._id, fullName);
     
     let message = 'Income certificate application submitted successfully!';
     if (assignment.redirected) {
@@ -146,6 +220,9 @@ export const updateApplicationStatus = async (req, res) => {
     if (!updatedApplication) {
       return res.status(404).json({ error: 'Application not found' });
     }
+    
+    // Send email notification based on the status update
+    await sendStatusUpdateEmail(updatedApplication, status);
     
     res.json({ 
       message: `Application ${status} successfully`,

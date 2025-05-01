@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { toast } from 'react-toastify';
+import { AppContent } from '../context/AppContext';
 
 const IncomeCertificateForm = () => {
+  const { backendUrl } = useContext(AppContent);
+  
   const [formData, setFormData] = useState({
     userId:'',
     fullName: '',
@@ -18,6 +22,7 @@ const IncomeCertificateForm = () => {
     incomeDailyWage: '',
     incomeOtherSources: '',
     incomeOtherDetails: '',
+    purpose: '',
     photo: null
   });
 
@@ -46,14 +51,30 @@ const IncomeCertificateForm = () => {
     }
   
     try {
-      const response = await fetch('http://localhost:4000/api/income-certificates', {
+      // Show loading toast
+      const loadingToastId = toast.loading("Submitting your application...");
+      
+      // Use backendUrl from context if available, otherwise fallback to hardcoded URL
+      const apiUrl = backendUrl ? `${backendUrl}/api/income-certificates` : 'http://localhost:4000/api/income-certificates';
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
-        body: submissionData
+        body: submissionData,
+        credentials: 'include' // Include cookies in the request
       });
   
+      const data = await response.json();
+      
+      // Update the loading toast with success or error message
       if (response.ok) {
-        alert('Income Certificate Application Submitted Successfully!');
-        // Optionally reset form
+        toast.update(loadingToastId, {
+          render: data.message || 'Income Certificate Application Submitted Successfully!',
+          type: "success",
+          isLoading: false,
+          autoClose: 5000
+        });
+        
+        // Reset form
         setFormData({
           userId:'',
           fullName: '',
@@ -75,11 +96,15 @@ const IncomeCertificateForm = () => {
           photo: null
         });
       } else {
-        const errorData = await response.json();
-        alert(`Submission failed: ${errorData.message}`);
+        toast.update(loadingToastId, {
+          render: data.message || 'Error submitting your application.',
+          type: "error",
+          isLoading: false,
+          autoClose: 5000
+        });
       }
     } catch (err) {
-      alert('Error while submitting form. Please try again.');
+      toast.error('Network error while submitting form. Please try again.');
       console.error(err);
     }
   };

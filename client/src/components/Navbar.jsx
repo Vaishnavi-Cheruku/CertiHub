@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FiUser } from "react-icons/fi"; // Profile Icon
@@ -21,9 +22,14 @@ const Navbar = () => {
             alt="Delhi Govt"
             className="h-16"
           />
-          <h1 className="text-xl font-semibold text-gray-800">
-            Government of NCT of Delhi
-          </h1>
+          <div className="flex flex-col">
+            <span className="text-3xl font-bold text-blue-600 tracking-wide">
+              CertiHub
+            </span>
+            <h1 className="text-xl font-semibold text-gray-800">
+              Government of NCT of Delhi
+            </h1>
+          </div>
         </div>
         <div className="flex items-center gap-4 mt-4 md:mt-0">
           <img

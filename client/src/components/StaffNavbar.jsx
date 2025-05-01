@@ -29,9 +29,14 @@ const StaffNavbar = () => {
             alt="Delhi Govt Logo"
             className="h-16 mr-4"
           />
-          <h1 className="text-xl font-semibold text-gray-800">
-            Government of National Capital Territory of Delhi
-          </h1>
+          <div className="flex flex-col">
+            <span className="text-3xl font-bold text-blue-600 tracking-wide">
+              CertiHub
+            </span>
+            <h1 className="text-xl font-semibold text-gray-800">
+              Government of National Capital Territory of Delhi
+            </h1>
+          </div>
         </div>
         <div className="flex items-center space-x-4">
           <img
