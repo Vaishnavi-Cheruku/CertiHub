@@ -3,29 +3,22 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AppContent } from "../context/AppContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const {
-    backendUrl, // ✅ Ensure backendUrl is used
-    userData,
-    setUserData,
-    setIsLoggedin,
-  } = useContext(AppContent);
-
+  const { backendUrl, userData, setUserData, setIsLoggedin } = useContext(AppContent);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  // ✅ Handle User Logout
   const handleUserLogout = async () => {
     try {
       axios.defaults.withCredentials = true;
       const { data } = await axios.post(`${backendUrl}/api/auth/logout`);
-
       if (data.success) {
-        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; // ✅ Clear token cookie
+        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         setIsLoggedin(false);
         setUserData(null);
-        navigate("/login"); // ✅ Redirect after logout
+        navigate("/login");
       } else {
         toast.error("Logout failed, try again.");
       }
@@ -34,59 +27,65 @@ const Navbar = () => {
     }
   };
 
-  // ✅ Handle Email Verification
   const handleUserVerifyEmail = () => {
     navigate("/verify-email");
   };
 
-  // ✅ Toggle Dropdown
   const toggleUserDropdown = () => {
     setUserDropdownOpen(!userDropdownOpen);
   };
 
   return (
-    <div className="w-full flex justify-between items-center p-4 sm:p-6 sm:px-24 absolute top-0">
+    <nav className="w-full z-10 flex justify-between items-center p-4 sm:px-24 absolute top-0">
+      <h1 className="text-xl sm:text-2xl font-bold text-blue-900">CertiHub</h1>
       <div className="flex items-center gap-4">
-        {/* ✅ User Login or Profile */}
         {userData ? (
           <div className="relative">
             <div
-              className="w-8 h-8 flex justify-center items-center rounded-full bg-blue-500 text-white cursor-pointer"
+              className="w-10 h-10 flex justify-center items-center rounded-full bg-blue-600 text-white font-semibold cursor-pointer"
               onClick={toggleUserDropdown}
             >
               {userData.name[0].toUpperCase()}
             </div>
-            {userDropdownOpen && (
-              <div className="absolute top-10 right-0 z-10 bg-white shadow-lg rounded-md w-36">
-                <ul className="list-none p-2 text-sm">
-                  {!userData.isAccountVerified && (
+
+            <AnimatePresence>
+              {userDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="absolute right-0 mt-2 bg-white border shadow-md rounded-md overflow-hidden w-40 z-20"
+                >
+                  <ul className="text-sm">
+                    {!userData.isAccountVerified && (
+                      <li
+                        className="p-3 hover:bg-gray-100 cursor-pointer"
+                        onClick={handleUserVerifyEmail}
+                      >
+                        Verify Email
+                      </li>
+                    )}
                     <li
-                      className="cursor-pointer hover:bg-gray-200 p-2 rounded"
-                      onClick={handleUserVerifyEmail}
+                      className="p-3 hover:bg-gray-100 cursor-pointer"
+                      onClick={handleUserLogout}
                     >
-                      Verify Email
+                      Logout
                     </li>
-                  )}
-                  <li
-                    className="cursor-pointer hover:bg-gray-200 p-2 rounded"
-                    onClick={handleUserLogout}
-                  >
-                    Logout
-                  </li>
-                </ul>
-              </div>
-            )}
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ) : (
           <button
-            className="border border-gray-500 rounded-full px-4 py-2 text-gray-800 hover:bg-gray-100 transition-all"
             onClick={() => navigate("/login")}
+            className="px-4 py-2 border border-blue-700 text-blue-700 rounded-full hover:bg-blue-50 transition"
           >
             User Login
           </button>
         )}
       </div>
-    </div>
+    </nav>
   );
 };
 
