@@ -91,7 +91,7 @@ const PendingApplications = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Pending Income Certificate Applications</h1>
+        <h1 className="text-2xl font-bold">Pending Applications</h1>
         
         {/* Staff Toggle Button */}
         <button 

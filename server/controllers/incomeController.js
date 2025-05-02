@@ -15,7 +15,7 @@ async function assignToMRO(applicationId) {
     status: 'pending'
   });
   
-  // If Vaishnavi has 10 or more pending applications, assign to Joyce
+  // If userone has 10 or more pending applications, assign to Joyce
   const assignedTo = vaishnaviAppCount >= 10 ? joyce : vaishnavi;
   
   await IncomeCertificate.findByIdAndUpdate(applicationId, { assignedTo });

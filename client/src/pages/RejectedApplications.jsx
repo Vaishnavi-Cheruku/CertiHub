@@ -45,7 +45,7 @@ const RejectedApplications = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Rejected Income Certificate Applications</h1>
+      <h1 className="text-2xl font-bold mb-6">Rejected Applications</h1>
       
       {loading ? (
         <div className="flex justify-center">
