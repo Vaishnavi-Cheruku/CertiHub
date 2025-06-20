@@ -11,10 +11,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [workload, setWorkload] = useState(null);
   
-  // Get staff ID from localStorage or wherever you store it after login
   const staffId = '67dbcf81993e7c68bfa7fa4e'; // Vaishnavi's ID
-  const staffName = 'Vaishnavi Cheruku'; // For display purposes
-  
+  const staffName = 'Vaishnavi Cheruku'; // For display
+
   useEffect(() => {
     fetchStats();
     fetchWorkload();
@@ -23,14 +22,8 @@ const Dashboard = () => {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      
-      // Get pending applications count
       const pendingRes = await axios.get(`http://localhost:4000/api/income-certificates/staff/${staffId}/pending`);
-      
-      // Get approved applications count
       const approvedRes = await axios.get(`http://localhost:4000/api/income-certificates/staff/${staffId}/approved`);
-      
-      // Get rejected applications count
       const rejectedRes = await axios.get(`http://localhost:4000/api/income-certificates/staff/${staffId}/rejected`);
       
       setStats({
@@ -38,7 +31,6 @@ const Dashboard = () => {
         approved: approvedRes.data.length,
         rejected: rejectedRes.data.length
       });
-      
       setLoading(false);
     } catch (error) {
       console.error('Error fetching statistics:', error);
@@ -65,7 +57,7 @@ const Dashboard = () => {
         </div>
       </div>
       
-      {workload && workload.vaishnavi.isOverloaded && (
+      {workload && workload.userOne.isOverloaded && (
         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6" role="alert">
           <p className="font-bold">Maximum Load Alert</p>
           <p>You have reached the maximum number of pending applications (10). New applications will be redirected to other staff members.</p>
@@ -135,40 +127,40 @@ const Dashboard = () => {
                 <div className="border rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-medium">Vaishnavi Cheruku</span>
-                    <span className={`px-2 py-1 rounded text-xs font-semibold ${workload.vaishnavi.isOverloaded ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                      {workload.vaishnavi.isOverloaded ? 'Overloaded' : 'Available'}
+                    <span className={`px-2 py-1 rounded text-xs font-semibold ${workload.userOne.isOverloaded ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                      {workload.userOne.isOverloaded ? 'Overloaded' : 'Available'}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
                     <div 
-                      className={`h-2.5 rounded-full ${workload.vaishnavi.isOverloaded ? 'bg-red-500' : 'bg-green-500'}`} 
-                      style={{ width: `${Math.min(workload.vaishnavi.pendingCount * 10, 100)}%` }}
+                      className={`h-2.5 rounded-full ${workload.userOne.isOverloaded ? 'bg-red-500' : 'bg-green-500'}`} 
+                      style={{ width: `${Math.min(workload.userOne.pendingCount * 10, 100)}%` }}
                     ></div>
                   </div>
                   <div className="mt-2 text-sm text-gray-600">
-                    <span>{workload.vaishnavi.pendingCount} pending applications</span>
+                    <span>{workload.userOne.pendingCount} pending applications</span>
                     <span className="mx-1">•</span>
-                    <span>{workload.vaishnavi.pendingCount >= 10 ? '100%' : `${workload.vaishnavi.pendingCount * 10}%`} capacity</span>
+                    <span>{workload.userOne.pendingCount >= 10 ? '100%' : `${workload.userOne.pendingCount * 10}%`} capacity</span>
                   </div>
                 </div>
                 
                 <div className="border rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-medium">Joyce</span>
-                    <span className={`px-2 py-1 rounded text-xs font-semibold ${workload.joyce.isOverloaded ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                      {workload.joyce.isOverloaded ? 'Overloaded' : 'Available'}
+                    <span className={`px-2 py-1 rounded text-xs font-semibold ${workload.userTwo.isOverloaded ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                      {workload.userTwo.isOverloaded ? 'Overloaded' : 'Available'}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
                     <div 
-                      className={`h-2.5 rounded-full ${workload.joyce.isOverloaded ? 'bg-red-500' : 'bg-green-500'}`} 
-                      style={{ width: `${Math.min(workload.joyce.pendingCount * 10, 100)}%` }}
+                      className={`h-2.5 rounded-full ${workload.userTwo.isOverloaded ? 'bg-red-500' : 'bg-green-500'}`} 
+                      style={{ width: `${Math.min(workload.userTwo.pendingCount * 10, 100)}%` }}
                     ></div>
                   </div>
                   <div className="mt-2 text-sm text-gray-600">
-                    <span>{workload.joyce.pendingCount} pending applications</span>
+                    <span>{workload.userTwo.pendingCount} pending applications</span>
                     <span className="mx-1">•</span>
-                    <span>{workload.joyce.pendingCount >= 10 ? '100%' : `${workload.joyce.pendingCount * 10}%`} capacity</span>
+                    <span>{workload.userTwo.pendingCount >= 10 ? '100%' : `${workload.userTwo.pendingCount * 10}%`} capacity</span>
                   </div>
                 </div>
               </div>

@@ -4,27 +4,27 @@ import staffModel from '../models/staffModel.js';
 import userModel from '../models/userModel.js';
 import transporter from '../config/nodemailer.js';
 
-// Assign application to MRO staff - helper function
 async function assignToMRO(applicationId) {
-  const vaishnavi = '67dbcf81993e7c68bfa7fa4e'; // Vaishnavi's staff ID
-  const joyce = '680d98877893a78c9e59cec0';    // Joyce's staff ID
+  const userOne = '67dbcf81993e7c68bfa7fa4e'; 
+  const userTwo = '680d98877893a78c9e59cec0'; 
   
-  // Count pending applications for Vaishnavi
-  const vaishnaviAppCount = await IncomeCertificate.countDocuments({
-    assignedTo: vaishnavi,
+  // Count pending applications for userOne
+  const userOneAppCount = await IncomeCertificate.countDocuments({
+    assignedTo: userOne,
     status: 'pending'
   });
   
-  // If userone has 10 or more pending applications, assign to Joyce
-  const assignedTo = vaishnaviAppCount >= 10 ? joyce : vaishnavi;
+  // If userOne has 10 or more pending applications, assign to userTwo
+  const assignedTo = userOneAppCount >= 10 ? userTwo : userOne;
   
   await IncomeCertificate.findByIdAndUpdate(applicationId, { assignedTo });
   
   return {
     assignedTo,
-    redirected: assignedTo === joyce
+    redirected: assignedTo === userTwo
   };
 }
+
 
 // Helper function to send application submission confirmation email
 async function sendApplicationSubmissionEmail(userId, applicationId, fullName) {
@@ -258,29 +258,29 @@ export const getApplicationById = async (req, res) => {
 // Get staff workload info
 export const getStaffWorkload = async (req, res) => {
   try {
-    const vaishnavi = '67dbcf81993e7c68bfa7fa4e';
-    const joyce = '680d98877893a78c9e59cec0';
+    const userOne = '67dbcf81993e7c68bfa7fa4e'; // Vaishnavi's staff ID
+    const userTwo = '680d98877893a78c9e59cec0'; // Joyce's staff ID
     
-    const vaishnaviPending = await IncomeCertificate.countDocuments({
-      assignedTo: vaishnavi,
+    const userOnePending = await IncomeCertificate.countDocuments({
+      assignedTo: userOne,
       status: 'pending'
     });
     
-    const joycePending = await IncomeCertificate.countDocuments({
-      assignedTo: joyce,
+    const userTwoPending = await IncomeCertificate.countDocuments({
+      assignedTo: userTwo,
       status: 'pending'
     });
     
     res.json({
-      vaishnavi: {
-        id: vaishnavi,
-        pendingCount: vaishnaviPending,
-        isOverloaded: vaishnaviPending >= 10
+      userOne: {
+        id: userOne,
+        pendingCount: userOnePending,
+        isOverloaded: userOnePending >= 10
       },
-      joyce: {
-        id: joyce,
-        pendingCount: joycePending,
-        isOverloaded: joycePending >= 10
+      userTwo: {
+        id: userTwo,
+        pendingCount: userTwoPending,
+        isOverloaded: userTwoPending >= 10
       }
     });
   } catch (error) {
